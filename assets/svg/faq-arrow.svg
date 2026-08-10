@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="11.4923" height="9.95265" viewBox="0 0 11.4923 9.95265" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="Polygon 2" d="M5.74617 0L11.4923 9.95265H0L5.74617 0Z" fill="url(#paint0_linear_0_4)"/>
+<defs>
+<linearGradient id="paint0_linear_0_4" x1="0" y1="4.97633" x2="11.4923" y2="4.97633" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FF701E"/>
+<stop offset="0.49" stop-color="#FF9050"/>
+<stop offset="1" stop-color="#FF701E"/>
+</linearGradient>
+</defs>
+</svg>

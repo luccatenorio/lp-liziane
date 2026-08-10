@@ -1,0 +1,1092 @@
+/* =============================================================
+   O Poder do Olhar: A Imersão — Lizanne Dantas
+   Implementação da LP a partir do Figma (frames DESKTOP 1920 e MOBILE 390)
+   ============================================================= */
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: #1c1c1c; }
+img, svg { display: block; max-width: 100%; }
+ul { margin: 0; padding: 0; list-style: none; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+s { text-decoration-line: line-through; }
+
+/* =============================================================
+   TOKENS
+   ============================================================= */
+:root {
+  /* Cores extraídas do Figma */
+  --orange-a: #ff701e;
+  --orange-b: #ff9050;
+  --grad-orange: linear-gradient(90deg, var(--orange-a) 0%, var(--orange-b) 49%, var(--orange-a) 100%);
+  --dark: #1c1c1c;
+  --ink: #3b3b3b;
+  --card-title-grad: linear-gradient(143.48deg, #fff 22.356%, #aeaeae 58.374%, #787878 94.392%);
+
+  /* Unidade de design: 1 = 1px no frame de 1920. Escala com a viewport e trava em 1920. */
+  --u: min(calc(100vw / 1920), 1px);
+
+  /* Tipografia fluida: interpola entre 390px e 1920px de viewport.
+     Mín. escolhidos para legibilidade real no celular (ver README). */
+  --fs-h1:          clamp(20px,   calc(20px   + 20      * (100vw - 390px) / 1530), 40px);
+  --fs-lead:        clamp(14px,   calc(14px   + 6       * (100vw - 390px) / 1530), 20px);
+  --fs-cta:         clamp(11px,   calc(11px   + 5       * (100vw - 390px) / 1530), 16px);
+  --fs-info:        clamp(11.5px, calc(11.5px + 4.5     * (100vw - 390px) / 1530), 16px);
+  --fs-h2:          clamp(24px,   calc(24px   + 24      * (100vw - 390px) / 1530), 48px);
+  --fs-body:        clamp(14px,   calc(14px   + 10      * (100vw - 390px) / 1530), 24px);
+  --fs-card-title:  clamp(15px,   calc(15px   + 9       * (100vw - 390px) / 1530), 24px);
+  --fs-bonus-h3:    clamp(14px,   calc(14px   + 7.385   * (100vw - 390px) / 1530), 21.385px);
+  --fs-bonus-p:     clamp(11.5px, calc(11.5px + 2.757   * (100vw - 390px) / 1530), 14.257px);
+  --fs-price-from:  clamp(20px,   calc(20px   + 28      * (100vw - 390px) / 1530), 48px);
+  --fs-price-main:  clamp(40px,   calc(40px   + 87.482  * (100vw - 390px) / 1530), 127.482px);
+  --fs-price-cash:  clamp(15px,   calc(15px   + 17      * (100vw - 390px) / 1530), 32px);
+  --fs-price-cta:   clamp(12.5px, calc(12.5px + 15.587  * (100vw - 390px) / 1530), 28.087px);
+  --fs-faq-q:       clamp(12.5px, calc(12.5px + 7.5     * (100vw - 390px) / 1530), 20px);
+  --fs-faq-cta:     clamp(11px,   calc(11px   + 8.366   * (100vw - 390px) / 1530), 19.366px);
+  --fs-mq:          clamp(11px,   calc(11px   + 13      * (100vw - 390px) / 1530), 24px);
+  --fs-badge-name:  clamp(14px,   calc(14px   + 13.309  * (100vw - 390px) / 1530), 27.309px);
+  --fs-badge-at:    clamp(10.5px, calc(10.5px + 8.502   * (100vw - 390px) / 1530), 19.002px);
+  --fs-word:        clamp(64px,   calc(64px   + 187.532 * (100vw - 390px) / 1530), 251.532px);
+  --fs-foot-dev:    clamp(6.5px,  calc(6.5px  + 1.896   * (100vw - 390px) / 1530), 8.396px);
+  --fs-foot-copy:   clamp(8px,    calc(8px    + 4       * (100vw - 390px) / 1530), 12px);
+}
+
+body {
+  font-family: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #fff;
+}
+
+/* A página ocupa a largura toda (fundos sangram em ultrawide);
+   o conteúdo posicionado vive dentro de .stage, travado em 1920 e centrado. */
+.page { width: 100%; overflow-x: clip; }
+
+.stage {
+  position: absolute;
+  inset: 0;
+  left: 0;
+  right: 0;
+  max-width: 1920px;
+  margin-inline: auto;
+}
+
+/* ---------- Utilitários ---------- */
+.grad {
+  background: var(--grad-orange);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.w600 { font-weight: 600; }
+.w700 { font-weight: 700; }
+
+/* ---------- Botão (CTA) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--grad-orange);
+  border: 1px solid #fff;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 600;
+  font-size: var(--fs-cta);
+  line-height: 1;
+  letter-spacing: .01em;
+  padding: calc(14.686 * var(--u)) calc(52.624 * var(--u));
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  will-change: transform;
+}
+.btn strong { font-weight: 800; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 112, 30, .38); filter: brightness(1.05); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* =============================================================
+   HERO
+   ============================================================= */
+.hero {
+  position: relative;
+  height: calc(860 * var(--u));
+  min-height: calc(520 * var(--u));
+  background: url('../img/hero-bg.png') center / cover no-repeat;
+  color: var(--ink);
+  isolation: isolate;
+}
+
+/* Acima de 1920 a arte do hero não é esticada nem cortada: fica centrada no
+   tamanho natural e as laterais são preenchidas por gradientes verticais
+   amostrados das bordas da própria imagem, então a emenda não aparece. */
+@media (min-width: 1921px) {
+  .hero {
+    background-image:
+      url('../img/hero-bg.png'),
+      linear-gradient(180deg, #fffaee 0%, #fff5e4 23%, #ffd3a9 50%, #f3b174 81%, #e6a266 100%),
+      linear-gradient(180deg, #fff3e2 0%, #ffefda 23%, #ffb377 50%, #ff7f25 81%, #fce0c4 100%);
+    background-size: auto 100%, 50.5% 100%, 50.5% 100%;
+    background-position: center, left top, right top;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+  }
+}
+
+.hero__inner {
+  position: absolute;
+  left: calc(418.68 * var(--u));
+  top: calc(121.2 * var(--u));
+  width: calc(561.63 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(24 * var(--u));
+}
+
+.hero__logo { width: calc(335.14 * var(--u)); height: auto; }
+
+.hero__title {
+  font-size: var(--fs-h1);
+  font-weight: 600;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -.005em;
+}
+.hero__title .grad { font-weight: 800; }
+.hero__title-rest { color: var(--ink); }
+
+.hero__lead {
+  width: calc(528.63 * var(--u));
+  max-width: 100%;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  line-height: 1.489;
+  letter-spacing: .04em;
+}
+
+.btn--hero { margin-top: calc(5 * var(--u)); }
+
+.infolist { display: flex; flex-direction: column; gap: calc(5.09 * var(--u)); }
+.infolist li {
+  display: flex;
+  align-items: center;
+  gap: calc(12.7 * var(--u));
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: var(--fs-info);
+  color: var(--ink);
+}
+.infolist img { width: calc(28 * var(--u)); height: calc(28 * var(--u)); flex: none; }
+
+/* Selo Lizanne Dantas sobre a foto */
+.badge {
+  position: absolute;
+  left: calc(906 * var(--u));
+  top: calc(637.12 * var(--u));
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(13.32 * var(--u));
+  padding: calc(10 * var(--u)) calc(28 * var(--u));
+  border-radius: calc(38 * var(--u));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.badge__avatar {
+  width: calc(59.865 * var(--u));
+  height: calc(59.865 * var(--u));
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+}
+.badge__text { display: flex; flex-direction: column; color: #fff; }
+.badge__name { font-size: var(--fs-badge-name); font-weight: 700; line-height: 1.25; }
+.badge__handle { font-size: var(--fs-badge-at); font-weight: 300; line-height: 1.25; }
+
+/* =============================================================
+   MARQUEE — duas faixas cruzadas no limite hero/escuro
+   ============================================================= */
+.mq {
+  --mq-h: calc(60 * var(--u));
+  position: relative;
+  z-index: 10;
+  height: var(--mq-h);
+  margin-top: calc(var(--mq-h) / -2);
+  margin-bottom: calc(var(--mq-h) / -2);
+  pointer-events: none;
+}
+
+.mq__strip {
+  position: absolute;
+  left: -8%;
+  width: 116%;
+  top: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.mq__strip--orange {
+  height: calc(59.689 * var(--u));
+  transform: translateY(-50%) rotate(-2.07deg);
+  background: var(--grad-orange);
+  border-block: 1px solid #fff;
+  z-index: 1;
+}
+/* A faixa da frente também é gradiente laranja com stroke branco
+   (o SVG "Rectangle 6" do Figma: #FF701E → #FF9050 49% → #FF701E). */
+.mq__strip--dark {
+  height: calc(56 * var(--u));
+  transform: translateY(-50%);
+  background: var(--grad-orange);
+  border-block: 1px solid #fff;
+  z-index: 2;
+}
+
+.mq__track { display: flex; width: max-content; animation: mq-left 42s linear infinite; }
+.mq__track--rev { animation-name: mq-right; animation-duration: 55s; }
+.mq__group { display: flex; flex: none; }
+
+.mq__item {
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: #fff;
+  font-size: var(--fs-mq);
+  line-height: 1;
+  padding-right: .35em;
+}
+.mq__strip--orange .mq__item { font-family: 'Poppins', system-ui, sans-serif; font-weight: 400; }
+.mq__strip--dark   .mq__item { font-family: 'Sora', system-ui, sans-serif; font-weight: 400; }
+.mq__item b { font-weight: 700; }
+
+@keyframes mq-left  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+@keyframes mq-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+/* =============================================================
+   BANDAS
+   ============================================================= */
+.band { position: relative; }
+.band--dark  { background: var(--dark); }
+.band--dark2 { background: var(--dark); }
+.band--white {
+  background: #fff;
+  position: relative;
+  z-index: 1;
+  border-top: calc(30 * var(--u)) solid transparent;
+  background-image: var(--grad-orange), linear-gradient(#fff, #fff);
+  background-origin: border-box, padding-box;
+  background-clip: border-box, padding-box;
+  background-repeat: no-repeat;
+  background-size: 100% calc(30 * var(--u)), 100% 100%;
+}
+
+.decor-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.decor { position: absolute; }
+
+/* “Lizanne” vetorizado, atrás das duas primeiras seções escuras */
+.decor--lizanne {
+  left: calc(-51.98 * var(--u));
+  top: calc(684.6 * var(--u));          /* 1544.6 − 860 (início da banda) */
+  width: calc(2023.96 * var(--u));
+  height: auto;
+}
+
+/* Chevron laranja atrás do bloco de preço */
+.decor--chevron {
+  left: 0;
+  top: calc(-504 * var(--u));           /* 2582 − 3086 (início da banda) */
+  width: calc(1920 * var(--u));
+  height: auto;
+}
+
+/* Forma decorativa da seção “Quem é” (SVG nativo 937×1734) */
+.decor--bio {
+  left: calc(936.14 * var(--u));
+  top: calc(377.6 * var(--u));          /* 3463.6 − 3086 */
+  width: calc(937 * var(--u));
+  height: auto;
+}
+
+/* =============================================================
+   POR QUE ESTAR NESSA IMERSÃO?
+   ============================================================= */
+.porque {
+  position: relative;
+  z-index: 1;
+  height: calc(880 * var(--u));          /* 860 → 1740 */
+}
+
+.porque__art { position: absolute; inset: 0; }
+.porque__disc {
+  position: absolute;
+  left: calc(942.53 * var(--u));
+  top: calc(18.16 * var(--u));           /* 878.16 − 860 */
+  width: calc(687.98 * var(--u));
+  height: calc(687.98 * var(--u));
+  border-radius: 50%;
+  background: var(--grad-orange);
+}
+.porque__circle {
+  position: absolute;
+  left: calc(935.53 * var(--u));
+  top: calc(11.16 * var(--u));
+  width: calc(702 * var(--u));
+  height: calc(702 * var(--u));
+  border-radius: 50%;
+  object-fit: cover;
+}
+.porque__photo {
+  position: absolute;
+  left: calc(355.5 * var(--u));
+  top: calc(11.44 * var(--u));            /* 871.44 − 860 */
+  width: calc(1304.37 * var(--u));
+  height: auto;
+}
+
+/* Painel de vidro com o texto */
+.porque__panel {
+  position: absolute;
+  left: calc(-70 * var(--u));
+  top: calc(96 * var(--u));               /* 956 − 860 */
+  width: calc(986 * var(--u));
+  height: calc(658 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: calc(10 * var(--u));
+  background: rgba(255, 255, 255, .04);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-right: 1px solid rgba(255, 255, 255, .16);
+}
+.porque__copy {
+  width: calc(487.28 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(10 * var(--u));
+}
+.porque__title {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.2;
+  width: calc(466.5 * var(--u));
+  max-width: 100%;
+}
+.porque__title b { font-weight: 800; }
+.porque__copy p {
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.489;
+  color: #fff;
+}
+.porque__copy p + p { margin-top: 1.489em; }
+.porque__copy b { font-weight: 700; }
+
+/* =============================================================
+   O QUE VOCÊ VAI APRENDER?
+   ============================================================= */
+/* SEM z-index aqui de propósito: com z-index a seção viraria contexto de
+   empilhamento e o .band--white (z-index 1, posterior no DOM) cobriria os
+   181px do card que invadem a banda branca — escondendo o CTA e a base
+   arredondada do card. Sem z-index, o .aprender__card (z-index 2) sobe. */
+.aprender {
+  position: relative;
+  margin-top: calc(-30.67 * var(--u));     /* card começa em 1709.33, sobrepondo o fim da seção anterior */
+  margin-bottom: calc(-181.19 * var(--u)); /* card invade 181px na banda branca */
+}
+
+.aprender__card {
+  position: relative;
+  z-index: 2;
+  width: calc(1420.57 * var(--u));
+  height: calc(862.86 * var(--u));
+  margin-inline: auto;
+  border-radius: calc(40 * var(--u));
+  /* Cinza com alfa alto (não branco): o card invade a banda branca e no Figma
+     continua cinza ali. Resolvido para ~#6f6f6f sobre o escuro e ~#aaa sobre o branco. */
+  background: linear-gradient(135deg, rgba(140, 140, 140, .74) 0%, rgba(168, 168, 168, .78) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  overflow: hidden;
+}
+
+.aprender__title {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(70.77 * var(--u));            /* 1780.1 − 1709.33 */
+  text-align: center;
+  font-size: var(--fs-h2);
+  font-weight: 400;
+  line-height: 1.25;
+  color: #fff;
+}
+.aprender__title b { font-weight: 700; }
+
+/* Palavra gigante “aprender” atrás dos cards */
+.aprender__word {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(460.41 * var(--u));            /* 2169.74 − 1709.33 */
+  text-align: center;
+  font-size: var(--fs-word);
+  font-weight: 700;
+  line-height: 1.26;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.cards {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(177.1 * var(--u));             /* 1886.43 − 1709.33 */
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: calc(20 * var(--u));
+}
+
+.card {
+  position: relative;
+  width: calc(283.04 * var(--u));
+  height: calc(489.96 * var(--u));
+  border: 1px solid #fff;
+  border-radius: calc(10 * var(--u));
+  overflow: hidden;
+  box-shadow: 0 calc(4 * var(--u)) calc(31.9 * var(--u)) rgba(0, 0, 0, .25);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 calc(46 * var(--u)) calc(56 * var(--u));
+}
+.card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(28, 28, 28, 0) 53.6%, var(--dark) 100%);
+}
+.card__title {
+  position: relative;
+  z-index: 2;
+  font-size: var(--fs-card-title);
+  font-weight: 500;
+  line-height: 1.28;
+  background: var(--card-title-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.card__title b { font-weight: 800; }
+
+.btn--aprender {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(742.72 * var(--u));            /* 2452.05 − 1709.33 */
+  z-index: 3;
+  white-space: nowrap;
+}
+.btn--aprender:hover { transform: translateX(-50%) translateY(-2px); }
+
+/* =============================================================
+   CONDIÇÕES E BÔNUS EXCLUSIVOS
+   ============================================================= */
+.bonus {
+  position: relative;
+  z-index: 1;
+  padding: calc(252.6 * var(--u)) calc(24 * var(--u)) calc(150 * var(--u));
+  color: var(--ink);
+}
+
+.bonus__title {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: calc(54 * var(--u));
+}
+
+.bonus__list {
+  width: calc(984.74 * var(--u));
+  max-width: 100%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(20 * var(--u));
+}
+.bonus__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(12.475 * var(--u));
+  flex: 1 1 0;
+}
+/* Divisor: linha curta de 47px centrada, como no Figma */
+.bonus__item + .bonus__item { padding-left: calc(20 * var(--u)); }
+.bonus__item + .bonus__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: calc(47.27 * var(--u));
+  background: rgba(59, 59, 59, .45);
+}
+.bonus__item img { width: calc(62 * var(--u)); height: auto; flex: none; }
+.bonus__text h3 {
+  font-size: var(--fs-bonus-h3);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: calc(1.782 * var(--u));
+}
+.bonus__text p { font-size: var(--fs-bonus-p); font-weight: 400; line-height: 1.28; }
+.bonus__text b { font-weight: 700; }
+
+/* =============================================================
+   PREÇO
+   ============================================================= */
+.preco {
+  position: relative;
+  z-index: 2;
+  margin-top: calc(-78.2 * var(--u));      /* invade 78px na banda branca */
+  padding-bottom: calc(230 * var(--u));
+}
+
+.preco__frame {
+  position: relative;
+  z-index: 2;
+  width: calc(1421.15 * var(--u));
+  max-width: calc(100% - 32px);
+  margin-inline: auto;
+  padding: calc(26 * var(--u)) calc(27 * var(--u));
+  border-radius: calc(30 * var(--u));
+  background: var(--grad-orange);
+  box-shadow:
+    calc(31 * var(--u)) calc(34 * var(--u)) calc(50.5 * var(--u)) rgba(0, 0, 0, .26),
+    calc(126 * var(--u)) calc(134 * var(--u)) calc(92 * var(--u)) rgba(0, 0, 0, .22),
+    calc(283 * var(--u)) calc(303 * var(--u)) calc(124.5 * var(--u)) rgba(0, 0, 0, .13);
+}
+
+.preco__card {
+  background: var(--dark);
+  border: 1px solid #fff;
+  border-radius: calc(27.35 * var(--u));
+  padding: calc(68 * var(--u)) calc(40 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.preco__from { font-size: var(--fs-price-from); font-weight: 400; line-height: 1.2; }
+.preco__from .grad { font-weight: 600; }
+.preco__main {
+  font-size: var(--fs-price-main);
+  font-weight: 600;
+  line-height: 1.1;
+  margin-top: calc(19 * var(--u));
+  white-space: nowrap;
+}
+.preco__cash {
+  font-size: var(--fs-price-cash);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: calc(19 * var(--u));
+}
+.preco__cash b { font-weight: 700; }
+
+.btn--preco {
+  margin-top: calc(63 * var(--u));
+  font-size: var(--fs-price-cta);
+  font-weight: 800;
+  border-width: calc(1.755 * var(--u));
+  padding: calc(25.78 * var(--u)) calc(92.379 * var(--u));
+  max-width: 100%;
+}
+
+.trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(30 * var(--u));
+  margin-top: calc(63 * var(--u));
+  flex-wrap: wrap;
+}
+.trust img { height: calc(35 * var(--u)); width: auto; }
+
+/* =============================================================
+   QUEM É LIZANNE DANTAS?
+   ============================================================= */
+.bio {
+  position: relative;
+  z-index: 1;
+  width: calc(1051.6 * var(--u));
+  max-width: calc(100% - 48px);
+  margin-inline: auto;
+  padding-bottom: calc(150 * var(--u));
+}
+
+/* Monograma LD (marca da Lizanne) abrindo a seção sobre ela.
+   Versão branca porque o fundo é escuro — o laranja do arquivo (#D97940)
+   não é o laranja da marca usado no resto da página. */
+.bio__mark {
+  width: calc(74 * var(--u));
+  height: auto;
+  margin: 0 auto calc(22 * var(--u));
+  opacity: .92;
+}
+
+.bio__title {
+  text-align: center;
+  font-size: var(--fs-h2);
+  font-weight: 400;
+  line-height: 1.25;
+  margin-bottom: calc(43 * var(--u));
+}
+.bio__title b { font-weight: 700; }
+
+.bio__grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(88 * var(--u));
+}
+
+/* Barra vertical laranja: 8.13px de largura e raio 20 no Figma.
+   Pseudo-elemento em vez de border-image, que renderizava mais grossa. */
+.bio__copy {
+  position: relative;
+  width: calc(529.3 * var(--u));
+  flex: none;
+  padding-left: calc(18.13 * var(--u));
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.32;
+}
+.bio__copy::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(8.13 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background: var(--grad-orange);
+}
+.bio__copy p + p { margin-top: 1.32em; }
+.bio__copy b { font-weight: 800; }
+
+/* Bloco composto (olho + foto + brilho) exportado do Figma como um asset só —
+   o empilhamento em três camadas de CSS não reproduzia a máscara com fidelidade. */
+.bio__art {
+  width: calc(434.31 * var(--u));
+  height: auto;
+  flex: none;
+}
+
+/* =============================================================
+   PERGUNTAS FREQUENTES
+   ============================================================= */
+.faq {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(112 * var(--u)) calc(24 * var(--u));
+  background: url('../img/faq-bg.png') center / cover no-repeat;
+  isolation: isolate;
+}
+.faq::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 28, 28, .55);
+  z-index: -1;
+}
+
+.faq__card {
+  width: calc(1226 * var(--u));
+  max-width: 100%;
+  padding: calc(30 * var(--u)) calc(130 * var(--u));
+  border: 1px solid #393939;
+  border-radius: calc(47 * var(--u));
+  background: rgba(28, 28, 28, .2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(40 * var(--u));
+}
+
+.faq__title {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.faq__list { width: 100%; display: flex; flex-direction: column; gap: calc(22 * var(--u)); }
+
+.faq__item { border: calc(1.362 * var(--u)) solid var(--orange-a); }
+
+.faq__q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(20 * var(--u));
+  padding: calc(20 * var(--u)) calc(30 * var(--u));
+  min-height: calc(80.378 * var(--u));
+  text-align: left;
+  font-size: var(--fs-faq-q);
+  font-weight: 400;
+  line-height: 1.6;
+  color: #fff;
+  cursor: default;
+}
+.faq__item[data-open] .faq__q,
+.faq__item.is-interactive .faq__q { cursor: pointer; }
+.faq__q:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.faq__arrow {
+  width: calc(11.492 * var(--u));
+  height: auto;
+  flex: none;
+  transform: rotate(180deg);
+  transition: transform .25s ease;
+}
+.faq__item[data-open] .faq__arrow { transform: rotate(0deg); }
+
+.faq__a {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .38s cubic-bezier(.4, 0, .2, 1);
+  font-size: var(--fs-faq-q);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .85);
+}
+/* min-height:0 é obrigatório: item de grid tem min-height:auto por padrão e
+   não colapsa abaixo do conteúdo — sem isso a resposta vaza fechada. */
+.faq__a > * {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(calc(-8 * var(--u)));
+  transition: opacity .22s ease, transform .3s cubic-bezier(.4, 0, .2, 1);
+}
+.faq__a-inner { padding: 0 calc(30 * var(--u)) calc(22 * var(--u)); }
+.faq__a-inner p { margin: 0; }
+
+.faq__item[data-open] .faq__a { grid-template-rows: 1fr; }
+.faq__item[data-open] .faq__a > * {
+  opacity: 1;
+  transform: none;
+  transition-delay: .08s;
+}
+
+.btn--faq {
+  font-size: var(--fs-faq-cta);
+  border-width: calc(1.21 * var(--u));
+  padding: calc(17.775 * var(--u)) calc(63.695 * var(--u));
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* =============================================================
+   FOOTER
+   ============================================================= */
+.footer {
+  background: var(--grad-orange);
+  /* 39 + 38 (altura do lockup) + 39 = 116px, igual ao frame do Figma */
+  padding: calc(39 * var(--u)) calc(24 * var(--u));
+}
+.footer__inner {
+  width: calc(1012.8 * var(--u));
+  max-width: 100%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(24 * var(--u));
+}
+
+.footer__dev {
+  display: flex;
+  align-items: flex-end;
+  gap: calc(9.647 * var(--u));
+  font-size: var(--fs-foot-dev);
+  font-weight: 300;
+  text-transform: uppercase;
+  color: #fff;
+}
+.footer__jurn { position: relative; display: flex; align-items: center; gap: calc(2.414 * var(--u)); }
+.footer__jurn img { height: auto; }
+.footer__jurn img:first-child { width: calc(11.98 * var(--u)); }
+.footer__jurn img:nth-child(2) { width: calc(30.37 * var(--u)); }
+.footer__studio { position: absolute; right: 0; bottom: calc(-2.5 * var(--u)); width: calc(11.5 * var(--u)); }
+
+.footer__logo { width: calc(210.42 * var(--u)); height: auto; }
+.footer__copy { font-size: var(--fs-foot-copy); font-weight: 300; color: #fff; white-space: nowrap; }
+
+/* =============================================================
+   ===============  MOBILE (frame de 390) ======================
+   Abaixo de 900px a página passa a seguir o layout do frame
+   MOBILE do Figma: cards empilhados, texto acima da foto etc.
+   ============================================================= */
+@media (max-width: 900px) {
+  :root { --u: calc(100vw / 390); }
+
+  /* Some do layout: os filhos voltam a posicionar-se pela própria seção,
+     que é o que as regras de mobile abaixo assumem. */
+  .stage { display: contents; }
+
+  /* ---------- Hero ---------- */
+  /* Altura do frame MOBILE (592). Precisa sobrescrever o height da regra base,
+     que vale 860 — sem isso o cover amplia a arte e corta o rosto. */
+  .hero {
+    height: calc(592 * var(--u));
+    aspect-ratio: auto;
+    min-height: 0;
+    background-image: url('../img/hero-bg-mobile.png');
+  }
+  .hero__inner {
+    left: calc(32.8 * var(--u));
+    top: calc(36.83 * var(--u));
+    width: calc(338.9 * var(--u));
+    align-items: flex-start;
+    gap: calc(14 * var(--u));
+  }
+  .hero__logo { width: calc(212.29 * var(--u)); align-self: center; }
+  /* No frame são 249px, mas com o corpo de texto maior isso viraria 6 linhas e
+     empurraria a lista de infos para cima da forma laranja. Largura total
+     mantém o bloco na mesma altura do Figma. */
+  .hero__lead { width: 100%; }
+  /* CTA do frame MOBILE tem 27px de altura */
+  .btn { padding: calc(9 * var(--u)) calc(28 * var(--u)); }
+  .infolist { gap: calc(3 * var(--u)); }
+  .infolist img { width: calc(15 * var(--u)); height: calc(15 * var(--u)); }
+  .infolist li { gap: calc(7 * var(--u)); }
+
+  .badge {
+    left: auto;
+    right: calc(16 * var(--u));
+    top: calc(524 * var(--u));
+    gap: calc(8 * var(--u));
+    padding: calc(6 * var(--u)) calc(12 * var(--u));
+  }
+  .badge__avatar { width: calc(26.17 * var(--u)); height: calc(26.17 * var(--u)); }
+
+  /* ---------- Marquee ---------- */
+  .mq { --mq-h: calc(30 * var(--u)); }
+  .mq__strip--orange { height: calc(29 * var(--u)); }
+  .mq__strip--dark { height: calc(24.42 * var(--u)); }
+
+  /* ---------- Decorativos ----------
+     O frame MOBILE do Figma não tem a tipografia gigante “Lizanne”
+     nem a forma decorativa solta da bio — só o chevron. */
+  .decor--lizanne,
+  .decor--bio { display: none; }
+  /* Chevron mobile. Ampliado em relação ao frame (524→660) porque o card de
+     preço aqui é mais alto que no Figma — com o tamanho original o chevron
+     ficava escondido atrás do card em vez de aparecer abaixo dele. */
+  .decor--chevron { top: calc(30 * var(--u)); width: calc(660 * var(--u)); left: calc(-135 * var(--u)); }
+
+  /* ---------- Por que: foto em cima, painel embaixo ----------
+     Bloco de arte exportado do frame MOBILE (Group 1947, 761×528.75
+     ancorado em x=-344), em vez de reposicionar as 3 camadas à mão. */
+  .porque { height: auto; display: flex; flex-direction: column; }
+  /* O export do Figma (780×1058 = 390×529 em 2x) já vem recortado na largura
+     do frame, então é largura total sem deslocamento. */
+  .porque__art {
+    position: relative;
+    inset: auto;
+    order: 1;
+    height: calc(529 * var(--u));
+    background: url('../img/porque-art-mobile.png') no-repeat;
+    background-size: 100% auto;
+    background-position: 0 0;
+  }
+  .porque__disc,
+  .porque__circle,
+  .porque__photo { display: none; }
+
+  .porque__panel {
+    position: relative;
+    left: auto; top: auto;
+    order: 2;
+    width: 100%;
+    height: auto;
+    margin-top: calc(-69.7 * var(--u));
+    padding: calc(38 * var(--u)) calc(30 * var(--u)) calc(48 * var(--u));
+    justify-content: flex-start;
+    border-right: 0;
+  }
+  .porque__copy { width: 100%; }
+  .porque__title { width: 100%; }
+
+  /* ---------- Aprender: card alto, 4 cards empilhados ---------- */
+  .aprender { padding-top: calc(40 * var(--u)); margin-bottom: calc(-90 * var(--u)); }
+  .aprender__card {
+    width: calc(327.89 * var(--u));
+    height: auto;
+    border-radius: calc(20 * var(--u));
+    padding: calc(28 * var(--u)) 0 calc(40 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(26 * var(--u));
+  }
+  .aprender__title { position: relative; top: auto; }
+  /* A palavra gigante “aprender” não existe no frame MOBILE */
+  .aprender__word { display: none; }
+  .cards {
+    position: relative;
+    top: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(15.34 * var(--u));
+  }
+  .card {
+    width: calc(217.14 * var(--u));
+    height: calc(375.88 * var(--u));
+    padding: 0 calc(35.25 * var(--u)) calc(43 * var(--u));
+  }
+  .btn--aprender { position: relative; left: auto; top: auto; transform: none; }
+  .btn--aprender:hover { transform: translateY(-2px); }
+
+  /* ---------- Bônus ---------- */
+  .bonus { padding: calc(130 * var(--u)) calc(24 * var(--u)) calc(90 * var(--u)); }
+  .bonus__list { flex-direction: column; align-items: stretch; gap: calc(62 * var(--u)); width: calc(306 * var(--u)); }
+  .bonus__item { flex: none; }
+  /* No mobile o divisor é uma linha vertical curta centrada entre os itens */
+  .bonus__item + .bonus__item { padding-left: 0; }
+  .bonus__item + .bonus__item::before {
+    left: 50%;
+    top: calc(-48 * var(--u));
+    transform: translateX(-50%);
+    width: 1px;
+    height: calc(33.8 * var(--u));
+  }
+  .bonus__item img { width: calc(46 * var(--u)); }
+
+  /* ---------- Preço ---------- */
+  .preco { margin-top: calc(-40 * var(--u)); padding-bottom: calc(140 * var(--u)); }
+  .preco__frame {
+    width: calc(373.24 * var(--u));
+    max-width: calc(100% - 16px);
+    padding: calc(8 * var(--u)) calc(8 * var(--u));
+    border-radius: calc(14 * var(--u));
+  }
+  .preco__card { padding: calc(30 * var(--u)) calc(16 * var(--u)); border-radius: calc(12 * var(--u)); }
+  .preco__main { margin-top: calc(10 * var(--u)); }
+  .preco__cash { margin-top: calc(10 * var(--u)); }
+  .btn--preco { margin-top: calc(26 * var(--u)); padding: calc(14 * var(--u)) calc(26 * var(--u)); border-width: 1px; }
+  .trust { margin-top: calc(26 * var(--u)); gap: calc(16 * var(--u)); }
+  .trust img { height: calc(22 * var(--u)); }
+
+  /* ---------- Quem é: texto acima, foto abaixo ---------- */
+  .bio { width: 100%; max-width: none; padding-inline: calc(24 * var(--u)); padding-bottom: calc(100 * var(--u)); }
+  .bio__mark { width: calc(52 * var(--u)); margin-bottom: calc(16 * var(--u)); }
+  .bio__grid { flex-direction: column; gap: calc(40 * var(--u)); }
+  /* Barra vertical de 5.247px no frame MOBILE */
+  .bio__copy { width: 100%; padding-left: calc(13.25 * var(--u)); }
+  .bio__copy::before { width: calc(5.25 * var(--u)); border-radius: calc(12 * var(--u)); }
+  .bio__art { width: calc(341.69 * var(--u)); height: auto; align-self: center; }
+
+  /* ---------- FAQ ---------- */
+  .faq { padding: calc(60 * var(--u)) calc(16 * var(--u)); }
+  .faq__card {
+    width: 100%;
+    padding: calc(24 * var(--u)) calc(18 * var(--u));
+    border-radius: calc(22 * var(--u));
+    gap: calc(24 * var(--u));
+  }
+  .faq__list { gap: calc(12 * var(--u)); }
+  .faq__q { padding: calc(14 * var(--u)) calc(16 * var(--u)); min-height: 0; gap: calc(12 * var(--u)); }
+  .faq__arrow { width: calc(9 * var(--u)); }
+  .btn--faq { padding: calc(12 * var(--u)) calc(28 * var(--u)); white-space: normal; }
+
+  /* ---------- Footer ---------- */
+  .footer { padding: calc(18 * var(--u)) calc(16 * var(--u)); }
+  .footer__inner { flex-direction: column; gap: calc(14 * var(--u)); text-align: center; }
+  .footer__logo { width: calc(150 * var(--u)); order: -1; }
+  .footer__copy { white-space: normal; }
+}
+
+/* Telas muito estreitas: evita que o CTA do hero estoure */
+@media (max-width: 380px) {
+  .btn--hero { padding-inline: calc(30 * var(--u)); }
+}
+
+/* =============================================================
+   MOVIMENTO — entradas ao rolar e microinterações
+   Só animação: nenhuma fonte, cor ou medida muda aqui.
+   A classe .js-reveal é posta no <html> pelo main.js, então sem
+   JavaScript todo o conteúdo aparece normalmente.
+   ============================================================= */
+.js-reveal [data-reveal] { opacity: 0; }
+.js-reveal [data-reveal].is-in { animation: rv-up .72s cubic-bezier(.22, .61, .36, 1) both; }
+.js-reveal [data-reveal='left'].is-in  { animation-name: rv-left; }
+.js-reveal [data-reveal='right'].is-in { animation-name: rv-right; }
+.js-reveal [data-reveal='zoom'].is-in  { animation-name: rv-zoom; animation-duration: .85s; }
+
+@keyframes rv-up    { from { opacity: 0; transform: translateY(26px); }  to { opacity: 1; transform: none; } }
+@keyframes rv-left  { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+@keyframes rv-right { from { opacity: 0; transform: translateX(30px); }  to { opacity: 1; transform: none; } }
+@keyframes rv-zoom  { from { opacity: 0; transform: scale(.955); }       to { opacity: 1; transform: none; } }
+
+/* ---- Cards de conteúdo: leve elevação e zoom na foto ---- */
+.card { transition: transform .45s cubic-bezier(.22, .61, .36, 1), box-shadow .45s ease; }
+.card__img { transition: transform .7s cubic-bezier(.22, .61, .36, 1); }
+.card:hover { transform: translateY(calc(-8 * var(--u))); box-shadow: 0 calc(18 * var(--u)) calc(44 * var(--u)) rgba(0, 0, 0, .38); }
+.card:hover .card__img { transform: scale(1.07); }
+
+/* ---- Ícones dos bônus ---- */
+.bonus__item img { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+.bonus__item:hover img { transform: scale(1.09) rotate(-3deg); }
+
+/* ---- Itens do FAQ ---- */
+.faq__item { transition: background-color .3s ease, box-shadow .3s ease; }
+.faq__item:hover { background-color: rgba(255, 255, 255, .04); }
+.faq__item[data-open] { box-shadow: 0 0 calc(26 * var(--u)) rgba(255, 112, 30, .18); }
+
+/* ---- Selo do hero e arte da bio: respiro sutil ---- */
+.badge { transition: transform .5s cubic-bezier(.22, .61, .36, 1); }
+.badge:hover { transform: translateY(calc(-4 * var(--u))); }
+
+/* ---- CTA principal do preço: pulso discreto para chamar atenção ---- */
+.btn--preco { animation: cta-pulse 2.8s ease-in-out infinite; }
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 112, 30, .42); }
+  50%      { box-shadow: 0 0 0 calc(14 * var(--u)) rgba(255, 112, 30, 0); }
+}
+.btn--preco:hover { animation-play-state: paused; }
+
+/* Respeita quem pediu menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .mq__track { animation: none; }
+  .btn { transition: none; }
+  .faq__a { transition: none; }
+  .js-reveal [data-reveal] { opacity: 1; }
+  .js-reveal [data-reveal].is-in { animation: none; }
+  .card, .card__img, .bonus__item img, .badge, .faq__item { transition: none; }
+  .card:hover, .card:hover .card__img, .bonus__item:hover img, .badge:hover { transform: none; }
+  .btn--preco { animation: none; }
+}
