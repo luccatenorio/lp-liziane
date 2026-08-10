@@ -4,9 +4,6 @@
 (function () {
   'use strict';
 
-  var reduced = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   /* -----------------------------------------------------------
      FAQ — accordion
      ----------------------------------------------------------- */
@@ -91,7 +88,9 @@
 
   var supported = 'IntersectionObserver' in window;
 
-  if (!reduced && supported) {
+  // Movimento padronizado: as entradas rodam em TODOS os aparelhos, sem
+  // consultar prefers-reduced-motion. A LP fica igual em qualquer dispositivo.
+  if (supported) {
     document.documentElement.classList.add('js-reveal');
 
     var targets = [];

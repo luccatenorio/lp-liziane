@@ -90,7 +90,37 @@ conteúdo sem animação. O observer usa `threshold: 0` e margem em pixels, não
 porcentagem, porque com `%` elementos altos ou no fim da página podem nunca
 atingir o limite e ficariam encalhados.
 
-Tudo respeita `prefers-reduced-motion: reduce`.
+**Padronização entre aparelhos** — `prefers-reduced-motion: reduce` é uma
+configuração do sistema operacional de cada aparelho (Windows: Acessibilidade →
+Efeitos visuais; Android: Remover animações, que a economia de bateria liga
+sozinha; iOS/macOS: Reduzir movimento). Na primeira versão a LP respeitava essa
+preferência, então quem tinha a opção ligada recebia a página **completamente
+estática** — e como a configuração varia de aparelho para aparelho, a LP parecia
+animada num PC e parada em outro.
+
+**Por decisão de projeto isso foi removido:** não existe mais bloco
+`@media (prefers-reduced-motion: reduce)` no CSS e o `main.js` não consulta a
+preferência. A animação é idêntica em qualquer dispositivo — entradas, cascata,
+marquee e pulso do CTA rodam para todos.
+
+O custo dessa escolha é que quem ligou "reduzir movimento" por sensibilidade
+vestibular recebe o movimento completo de qualquer forma. Para voltar a
+respeitar a preferência sem perder a padronização, o meio-termo é reintroduzir o
+`@media` trocando só o `animation-name` das entradas por `rv-fade` (fade sem
+deslocamento) e desligando `.mq__track` e `.btn--preco` — há um comentário no
+fim do `styles.css` com essa receita.
+
+Verificado nos dois modos: `animation-name` do marquee (`mq-left`), do pulso
+(`cta-pulse`) e a transição dos cards (0,45s) saem iguais, com zero elementos
+presos invisíveis.
+
+**Como testar sem mexer no sistema:** Chrome → F12 → menu ⋮ → More tools →
+Rendering → `Emulate CSS prefers-reduced-motion`.
+
+**Preview local:** o `<script>` usa `type="module"`, que o navegador bloqueia por
+CORS em `file://` — abrindo o `index.html` direto do disco o JS não roda (sem
+animação e o FAQ não abre). Use `npm run dev` ou qualquer servidor local. Em
+produção (Vercel, HTTPS) funciona normalmente.
 
 ## Decisões que divergem do Figma (de propósito)
 

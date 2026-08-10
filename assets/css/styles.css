@@ -1050,6 +1050,8 @@ body {
 @keyframes rv-left  { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
 @keyframes rv-right { from { opacity: 0; transform: translateX(30px); }  to { opacity: 1; transform: none; } }
 @keyframes rv-zoom  { from { opacity: 0; transform: scale(.955); }       to { opacity: 1; transform: none; } }
+/* Variante sem deslocamento, para quem pediu menos movimento */
+@keyframes rv-fade  { from { opacity: 0; }                               to { opacity: 1; } }
 
 /* ---- Cards de conteúdo: leve elevação e zoom na foto ---- */
 .card { transition: transform .45s cubic-bezier(.22, .61, .36, 1), box-shadow .45s ease; }
@@ -1078,15 +1080,16 @@ body {
 }
 .btn--preco:hover { animation-play-state: paused; }
 
-/* Respeita quem pediu menos movimento */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .mq__track { animation: none; }
-  .btn { transition: none; }
-  .faq__a { transition: none; }
-  .js-reveal [data-reveal] { opacity: 1; }
-  .js-reveal [data-reveal].is-in { animation: none; }
-  .card, .card__img, .bonus__item img, .badge, .faq__item { transition: none; }
-  .card:hover, .card:hover .card__img, .bonus__item:hover img, .badge:hover { transform: none; }
-  .btn--preco { animation: none; }
-}
+/* -------------------------------------------------------------
+   Movimento padronizado para todos os aparelhos
+   Por decisão de projeto NÃO há bloco @media prefers-reduced-motion:
+   a animação é idêntica em qualquer dispositivo, independente da
+   configuração de "reduzir movimento" do sistema operacional.
+   Antes esse bloco existia e deixava a página estática em quem
+   tinha a opção ligada — o que fazia a LP parecer animada num
+   aparelho e parada em outro.
+   Para voltar a respeitar a preferência, reintroduza aqui um
+   @media (prefers-reduced-motion: reduce) trocando o
+   animation-name das entradas por rv-fade e desligando
+   .mq__track e .btn--preco.
+   ------------------------------------------------------------- */
