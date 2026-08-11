@@ -161,7 +161,8 @@ ampliado, ele aparece abaixo dele como no design.
 
 ## Já configurado
 
-**Checkout** — todos os CTAs apontam para `https://mpago.la/2s9LWyy`, abrindo em
+**Checkout** — todos os CTAs apontam para
+`https://pay.cakto.com.br/3gkt8z6_1033282`, abrindo em
 nova aba. São 4 botões: hero, card "O que você vai aprender?", card de preço e
 FAQ. Para trocar depois, é o mesmo link nos 4 lugares (ou defina
 `window.CHECKOUT_URL` antes do `main.js`, que sobrescreve o botão de preço).
