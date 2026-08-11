@@ -130,6 +130,11 @@ para 10,5px, a legenda dos bônus para 8,6px e o CTA para 8,45px. Isso é
 sub-legível num celular real e prejudicaria a conversão. Mantive o layout, a
 hierarquia e os títulos do mobile, mas com piso de legibilidade (corpo 14px,
 CTA 11px). **Títulos e a estrutura estão fiéis ao frame.**
+Exceção: o texto de apoio do hero no mobile é 13,5px, e não 14px — a 14px ele
+virava 6 linhas e empurrava a lista de infos para cima da forma laranja do
+fundo, que começa em y=378. Com 13,5px fica em 5 linhas e todo o bloco termina
+antes disso. A largura é a do frame (252px) justamente para o texto quebrar
+antes da foto da Lizanne em vez de escrever por cima dela.
 Para voltar ao valor literal do Figma, mexa só nos mínimos dos tokens `--fs-*`
 no topo do `styles.css`.
 

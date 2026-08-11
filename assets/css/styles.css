@@ -865,21 +865,38 @@ body {
     min-height: 0;
     background-image: url('../img/hero-bg-mobile.png');
   }
+  /* Ritmo vertical do hero mobile.
+     A forma laranja do fundo começa em y=378, então todo o bloco (logo →
+     título → texto → CTA → infos) precisa terminar antes disso, senão o
+     texto escuro cai sobre o laranja e perde contraste. */
   .hero__inner {
     left: calc(32.8 * var(--u));
-    top: calc(36.83 * var(--u));
+    top: calc(18 * var(--u));
     width: calc(338.9 * var(--u));
     align-items: flex-start;
-    gap: calc(14 * var(--u));
+    gap: calc(10 * var(--u));
   }
-  .hero__logo { width: calc(212.29 * var(--u)); align-self: center; }
-  /* No frame são 249px, mas com o corpo de texto maior isso viraria 6 linhas e
-     empurraria a lista de infos para cima da forma laranja. Largura total
-     mantém o bloco na mesma altura do Figma. */
-  .hero__lead { width: 100%; }
+  /* Respiro entre a logo e o título (10 do gap + 28 = 38), como no frame.
+     Cabe porque o texto de apoio a 12.5px fecha em 4 linhas em vez de 5. */
+  .hero__logo {
+    width: calc(212.29 * var(--u));
+    align-self: center;
+    margin-bottom: calc(28 * var(--u));
+  }
+  /* Largura medida no bg do mobile: na faixa que o parágrafo ocupa (y 173–256)
+     o cabelo da Lizanne chega a x=286. Com início em x=32.8, 243px deixa ~10px
+     de folga — daí o texto fechar em 5 linhas e não 4. Tentar 4 linhas exigia
+     285px de caixa, que invadia a foto. Justificado como no frame. */
+  .hero__lead {
+    width: calc(243 * var(--u));
+    font-size: clamp(12px, calc(12px + 8 * (100vw - 390px) / 1530), 20px);
+    line-height: 1.38;
+    text-align: justify;
+    text-wrap: pretty;
+  }
   /* CTA do frame MOBILE tem 27px de altura */
   .btn { padding: calc(9 * var(--u)) calc(28 * var(--u)); }
-  .infolist { gap: calc(3 * var(--u)); }
+  .infolist { gap: calc(2 * var(--u)); }
   .infolist img { width: calc(15 * var(--u)); height: calc(15 * var(--u)); }
   .infolist li { gap: calc(7 * var(--u)); }
 
