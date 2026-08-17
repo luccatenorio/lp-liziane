@@ -17,6 +17,32 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
+
+<!-- ===================== RASTREAMENTO META =====================
+     Cole o ID do Pixel abaixo. Enquanto estiver vazio, nada é
+     carregado e a página funciona normalmente.
+     O repasse de UTMs e fbclid para o checkout roda de qualquer
+     forma (fica em assets/js/main.js) — é ele que permite ao Meta
+     atribuir a venda à campanha.
+============================================================== -->
+<script>
+  window.META_PIXEL_ID = '1075793535172116';
+</script>
+<script>
+!function(){
+  var id = window.META_PIXEL_ID;
+  if (!id) return;
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', id);
+  fbq('track', 'PageView');
+}();
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1075793535172116&ev=PageView&noscript=1"></noscript>
 </head>
 <body>
 <main class="page">

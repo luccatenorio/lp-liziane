@@ -168,4 +168,69 @@
       a.setAttribute('rel', 'noopener');
     });
   }
+
+  /* -----------------------------------------------------------
+     Rastreamento: repasse de parâmetros para o checkout
+
+     A compra acontece no domínio da Cakto, não aqui. Se os
+     parâmetros de clique morrerem nesta página, a Cakto recebe
+     fbc/fbp/utm nulos e o Meta não consegue atribuir a venda ao
+     anúncio. Então capturamos na chegada, guardamos na sessão
+     (sobrevive à navegação interna) e anexamos aos links de
+     checkout.
+
+     Roda independente do Pixel estar configurado.
+     ----------------------------------------------------------- */
+  var PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term',
+                'utm_content', 'utm_id', 'fbclid', 'gclid', 'ttclid', 'sck', 'src'];
+  var STORE = 'lp_track_params';
+
+  function lerGuardados() {
+    try { return JSON.parse(sessionStorage.getItem(STORE) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function capturarParams() {
+    var atual = lerGuardados();
+    var busca = new URLSearchParams(window.location.search);
+    var mudou = false;
+    PARAMS.forEach(function (p) {
+      var v = busca.get(p);
+      if (v && atual[p] !== v) { atual[p] = v; mudou = true; }
+    });
+    if (mudou) {
+      try { sessionStorage.setItem(STORE, JSON.stringify(atual)); } catch (e) {}
+    }
+    return atual;
+  }
+
+  function anexarAoCheckout(params) {
+    var chaves = Object.keys(params);
+    if (!chaves.length) return;
+    Array.prototype.forEach.call(document.querySelectorAll('a[href*="cakto.com.br"]'), function (a) {
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      chaves.forEach(function (k) {
+        if (!u.searchParams.has(k)) u.searchParams.set(k, params[k]);
+      });
+      a.href = u.toString();
+    });
+  }
+
+  var trackParams = capturarParams();
+  anexarAoCheckout(trackParams);
+
+  // InitiateCheckout no clique, com event_id para deduplicar contra
+  // o evento server-side que o n8n envia pela API de Conversões.
+  Array.prototype.forEach.call(document.querySelectorAll('a[href*="cakto.com.br"]'), function (a) {
+    a.addEventListener('click', function () {
+      if (typeof window.fbq !== 'function') return;
+      var eid = 'ic-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+      window.fbq('track', 'InitiateCheckout', {
+        content_name: 'Imersao O Poder do Olhar',
+        currency: 'BRL',
+        value: 180.00
+      }, { eventID: eid });
+    });
+  });
 })();
